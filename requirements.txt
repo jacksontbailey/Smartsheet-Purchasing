@@ -1,0 +1,7 @@
+# pip install -r requirements.txt
+smartsheet-python-sdk
+python-dotenv
+pandas
+numpy
+openpyxl
+pywin32
