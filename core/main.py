@@ -13,8 +13,9 @@ def main():
         template_sheet_id = settings.TEMPLATE_SHEET
         new_sheet_name = settings.NEW_SHEET_NAME
         destination_workspace_id = int(settings.WORKSPACE_ID)
+        api_key = settings.API_KEY
 
-        sheet_creator = SheetCreator(template_sheet_id, new_sheet_name, destination_workspace_id)
+        sheet_creator = SheetCreator(api_key, template_sheet_id, new_sheet_name, destination_workspace_id)
         new_sheet = sheet_creator.create_sheet()
 
         print(f"result: {new_sheet}")
