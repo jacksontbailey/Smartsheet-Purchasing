@@ -50,6 +50,7 @@ class SheetManager:
         rows = []
         for row_data in rows_data:
             new_row = smartsheet.models.Row()
+            new_row.to_bottom = True
             for column_name, value in row_data.items():
                 column_id = column_dict[column_name]
                 cell = smartsheet.models.Cell()
