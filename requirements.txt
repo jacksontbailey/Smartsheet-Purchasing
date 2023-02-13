@@ -1,7 +1,8 @@
-# pip install -r requirements.txt
+# To install all dependencies use "pip install -r requirements.txt"
 smartsheet-python-sdk
 python-dotenv
 pandas
 numpy
 openpyxl
 pywin32
+pyinputplus

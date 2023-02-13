@@ -24,9 +24,5 @@ class Settings:
     EXCEL_TAB = os.getenv("EXCEL_TAB")
     TABLE_NAME = os.getenv("TABLE_NAME")
 
-    # - Fillable data at runtime
-    NEW_SHEET_NAME = input("Enter sheet name: ")
-    TARGET_EXCEL_FILE = input("Enter excel sheet to grab data from: ")
-
 
 settings = Settings()
