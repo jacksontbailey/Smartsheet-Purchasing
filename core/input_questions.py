@@ -14,7 +14,6 @@ class InputQuestions:
         smartsheet_name (str): The name of the smartsheet to import data into.
         end (bool): A flag to determine if the user wants to end the program.
     """
-
     start_time = None
 
     def __init__(self):
@@ -37,24 +36,26 @@ class InputQuestions:
     def print_run_time(cls):
         """Print the runtime of the program."""
         if cls.start_time is not None:
-            print("Script run time: {:.2f} seconds".format(time.time() - cls.start_time))
+            print(f"Script run time: {time.time() - cls.start_time} seconds")
 
 
     @classmethod
     def end_script(cls):
-        """End the program and print the runtime if the user has indicated they want to end the program."""
+        """ End the program and print the runtime if the user has
+            indicated they want to end the program.
+        """
         if cls.instance.end:
             cls.print_run_time()
             sys.exit("User has ended the program...")
 
 
     def main_script_options(self):
-        """Prompt the user with a menu of options to create a new smartsheet or import data into an existing one.
+        """ Prompt the user with a menu of options to create a new 
+            smartsheet or import data into an existing one.
 
         Returns:
             str: The option selected by the user.
         """
-
         InputQuestions.start_timer()    
         
         self.option_selected = pyip.inputMenu(
@@ -77,7 +78,6 @@ class InputQuestions:
         Returns:
             str: The name of the new smartsheet.
         """
-
         if self.option_selected == 'Create New SmartSheet':
             self.new_sheet_name = pyip.inputStr(
                 prompt = '\nEnter new sheet name (or "End" to exit): ', 
@@ -89,11 +89,6 @@ class InputQuestions:
                 self.end_script()
 
             return self.new_sheet_name
-        
-        else:
-            print(f"Cannot call [name_new_smartsheet] method. The option_selected variable was '{self.option_selected}' and not 'Create New SmartSheet'.")
-            self.end_script()
-            return None
 
 
     def select_excel_sheet(self):
@@ -102,7 +97,6 @@ class InputQuestions:
         Returns:
             str: The name of the excel sheet.
         """
-
         if self.option_selected == 'Import Data into Existing Sheet':
             self.excel_sheet_name = pyip.inputStr(
                 prompt='\nEnter excel sheet to grab data from (or "End" to exit): ', 
@@ -115,11 +109,6 @@ class InputQuestions:
             
             print(f"You entered: {self.excel_sheet_name}")
             return self.excel_sheet_name
-        
-        else:
-            print(f"Cannot call [select_excel_sheet] method. The option_selected variable was '{self.option_selected}' and not 'Import Data into Existing Sheet'.")
-            self.end_script()
-            return None
 
 
     def select_smartsheet_name(self):
@@ -128,18 +117,13 @@ class InputQuestions:
         Returns:
             str: The name of the smartsheet.
         """
-
         if self.option_selected == 'Import Data into Existing Sheet':
 
-            self.smartsheet_name = pyip.inputStr(prompt= '\nEnter name of the SmartSheet you want to upload excel data to (or "End" to exit): ', allowRegexes=['End'])
+            self.smartsheet_name = pyip.inputStr(prompt= '\nEnter name of the SmartSheet you \
+                                                 want to upload excel data to (or "End" to exit): ', allowRegexes=['End'])
             if self.smartsheet_name == "End":
                 self.end = True
                 self.end_script()
             
             print(f"Name of Selected SmartSheet: {self.smartsheet_name}")
             return self.smartsheet_name
-        
-        else:
-            print(f"Cannot call [select_smartsheet_name] method. The option_selected variable was '{self.option_selected}' and not 'Import Data into Existing Sheet'.")
-            self.end_script()
-            return None
