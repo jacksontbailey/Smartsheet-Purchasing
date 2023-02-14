@@ -6,6 +6,10 @@ from smartsheet_functions.create_new_sheet import create_new_smartsheet
 
 
 def main():
+    """
+    The main function serves as the entry point for the script and provides a user-friendly interface to interact with the functionality provided by the code.
+    """
+        
     iq = InputQuestions()
     while not iq.end:
         try:

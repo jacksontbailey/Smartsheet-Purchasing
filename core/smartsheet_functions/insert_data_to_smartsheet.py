@@ -40,3 +40,8 @@ def insert_data_to_smartsheet(excel_data, sheet_manager):
     except Exception as e:
         # If there's an error, display an error message
         print("Error inserting data: ", str(e))
+
+
+# Note: The columns for the data being inserted (ITEM#, ITEM DESCRIPTION, QTY, UOM, AREA, NOTES, AWARDED TO)
+# -- are specific to this project and need to be adjusted on a project-to-project basis.
+

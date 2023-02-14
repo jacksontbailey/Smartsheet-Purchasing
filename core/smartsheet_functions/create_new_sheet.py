@@ -3,6 +3,15 @@ from smartsheet_classes.smartsheet_api import SmartSheetApi
 
 
 def create_new_smartsheet(sheet_name):
+    """Create a new smartsheet.
+
+    Args:
+        sheet_name (str): The name of the new smartsheet to be created.
+
+    Returns:
+        None: This function does not return any value.
+    """
+
     try:
 
         new_sheet = SmartSheetApi(
@@ -13,8 +22,8 @@ def create_new_smartsheet(sheet_name):
         print(f"Workspace is: {new_sheet.workspace_id}")
         
         new_sheet.create_sheet_in_workspace(
+            template_sheet_id = settings.TEMPLATE_SHEET,
             new_sheet_name = sheet_name, 
-            template_id = settings.TEMPLATE_SHEET
         )
     
     except Exception as e:

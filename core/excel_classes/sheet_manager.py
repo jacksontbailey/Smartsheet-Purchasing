@@ -25,11 +25,10 @@ class ExcelSheetManager:
             Dict[str, int]: A dictionary that contains the names and IDs of the columns in the tab.
         """
 
-        print(f"table is: {self.table_name}")
         try:
             df = pd.read_excel(f"{self.file_location}\{self.file_name}.xlsx", sheet_name=self.tab_name, engine='openpyxl', header=0)
             if df.empty:
-                raise ValueError('The tab is empty')
+                raise ValueError(f'The {self.tab_name} tab is empty')
 
             self.data = df.to_dict('records')
             return self.data

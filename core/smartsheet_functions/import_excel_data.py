@@ -6,6 +6,19 @@ from smartsheet_functions.insert_data_to_smartsheet import insert_data_to_smarts
 
 
 def import_excel_data(import_question):
+    """
+    Imports data from an Excel sheet into a Smartsheet.
+    
+    This function imports data from an Excel sheet into a Smartsheet. It does so by first selecting the Excel sheet from which to grab data from and the Smartsheet to which to upload that data. It then reads in the data from the selected Excel sheet and inserts it into the selected Smartsheet.
+    
+    Parameters:
+        import_question (object): an instance of the `InputQuestions` class that contains information about the selected options for the import process.
+    
+    Returns:
+        None: This function does not return any value.
+    
+    """
+    
     TARGET_EXCEL_FILE = import_question.select_excel_sheet()
 
     excel_data = ExcelSheetManager(
