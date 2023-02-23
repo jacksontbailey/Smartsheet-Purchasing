@@ -60,7 +60,7 @@ class InputQuestions:
         
         self.option_selected = pyip.inputMenu(
             prompt = "\nDo you want to create a new SmartSheet or import data into an existing one?\n\n",
-            choices = ['Create New SmartSheet', 'Import Data into Existing Sheet', 'End'],
+            choices = ['Create New SmartSheet', 'Import Data into Existing Sheet', 'Update Existing SmartSheet with Excel File','End'],
             numbered = True,
             allowRegexes=['End']
         )
@@ -97,7 +97,7 @@ class InputQuestions:
         Returns:
             str: The name of the excel sheet.
         """
-        if self.option_selected == 'Import Data into Existing Sheet':
+        if self.option_selected == 'Import Data into Existing Sheet' or 'Update Existing SmartSheet with Excel File':
             self.excel_sheet_name = pyip.inputStr(
                 prompt='\nEnter excel sheet to grab data from (or "End" to exit): ', 
                 allowRegexes=['End']
@@ -117,10 +117,9 @@ class InputQuestions:
         Returns:
             str: The name of the smartsheet.
         """
-        if self.option_selected == 'Import Data into Existing Sheet':
+        if self.option_selected == 'Import Data into Existing Sheet' or 'Update Existing SmartSheet with Excel File':
 
-            self.smartsheet_name = pyip.inputStr(prompt= '\nEnter name of the SmartSheet you \
-                                                 want to upload excel data to (or "End" to exit): ', allowRegexes=['End'])
+            self.smartsheet_name = pyip.inputStr(prompt= '\nEnter name of the SmartSheet you want to upload excel data to (or "End" to exit): ', allowRegexes=['End'])
             if self.smartsheet_name == "End":
                 self.end = True
                 self.end_script()

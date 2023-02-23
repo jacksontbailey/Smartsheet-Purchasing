@@ -49,8 +49,8 @@ License:
 import sys
 
 from input_questions import InputQuestions
-from smartsheet_functions.import_excel_data import import_excel_data
 from smartsheet_functions.create_new_sheet import create_new_smartsheet
+from smartsheet_functions.import_excel_data import import_excel_data
 
 
 def main():
@@ -58,19 +58,19 @@ def main():
     The main function serves as the entry point for the script and provides \
     a user-friendly interface to interact with the functionality provided by the code.
     """
-    import_question = InputQuestions()
-    while not import_question.end:
+    input_question = InputQuestions()
+    while not input_question.end:
         try:
             # - Grab Currrent Time Before Running the Code
-            option_selected = import_question.main_script_options()
+            option_selected = input_question.main_script_options()
 
             if option_selected == 'Create New SmartSheet':
-                new_sheet_name = import_question.name_new_smartsheet()
+                new_sheet_name = input_question.name_new_smartsheet()
                 create_new_smartsheet(sheet_name = new_sheet_name)
 
-            elif option_selected == 'Import Data into Existing Sheet':
-                import_excel_data(import_question = import_question)
-
+            elif option_selected == 'Import Data into Existing Sheet' or 'Update Existing SmartSheet with Excel File':
+                import_excel_data(input_question = input_question, option = option_selected)
+            
             else:
                 print("Incorrect input")
 

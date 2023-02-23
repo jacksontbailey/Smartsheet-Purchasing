@@ -1,22 +1,26 @@
 import smartsheet
+import pandas as pd
 from smartsheet_functions.client import create_smartsheet_client
 
 
 class SmartSheetApi:
-    def __init__(self, api_key, sheet_id = None, sheet_data = None, sheet_name = None, new_sheet_name = None, folder_id = None, workspace_id = None):
+    def __init__(self, api_key, folder_id = None, new_sheet_name = None, sheet_data = None, sheet_id = None, sheet_name = None, workspace_id = None):
         """Initializes a SheetManager object.
 
         Args:
             sheet_id (int): The ID of the sheet to manage.
             sheet_data (pandas DataFrame, optional): The data for the sheet. If not provided, the data will be fetched from Smartsheet.
         """
-        self.sheet_id = sheet_id
-        self.sheet_data = sheet_data
-        self.sheet_name = sheet_name
-        self.new_sheet_name = new_sheet_name
         self.folder_id = folder_id
-        self.workspace_id = workspace_id
+        self.key_column_id = None
+        self.new_sheet_name = new_sheet_name
+        self.sheet_columns = None
+        self.sheet_data = sheet_data
+        self.sheet_id = sheet_id
+        self.sheet_name = sheet_name
         self.smartsheet_client = create_smartsheet_client(api_key)
+        self.smartsheet_data = None
+        self.workspace_id = workspace_id
 
 
     def get_sheets_in_folder(self):
@@ -58,7 +62,6 @@ class SmartSheetApi:
                     return
             
             sheet = next((sheet for sheet in self.sheets if sheet["name"] == self.sheet_name), None)
-            print(f"sheet id is: {sheet['id']}, sheet is: {sheet},")
             if sheet:
                 self.sheet_id = sheet["id"]
                 return sheet["id"] 
@@ -125,14 +128,14 @@ class SmartSheetApi:
         sheet = self.smartsheet_client.Sheets.get_sheet(self.sheet_id)
 
         # - Get the list of columns in the sheet
-        columns = sheet.columns
+        all_sheet_columns = sheet.columns
 
         # - Create a dictionary of column names and IDs
-        column_dict = {}
-        for column in columns:
-            column_dict[column.title] = column.id
+        self.sheet_columns = {}
+        for column in all_sheet_columns:
+            self.sheet_columns[column.title] = column.id
 
-        return column_dict
+        return self.sheet_columns
 
 
     def update_columns(self, sheet_id, new_columns):
@@ -179,7 +182,7 @@ class SmartSheetApi:
         return row
 
 
-    def add_rows(self, rows_data, column_dict):
+    def add_rows(self, mapped_columns, column_dict):
         """Adds rows to the sheet.
 
         Args:
@@ -191,10 +194,10 @@ class SmartSheetApi:
         """
         # - Create a list of row objects
         rows = []
-        for row_data in rows_data:
+        for mapped_column in mapped_columns:
             new_row = smartsheet.models.Row()
             new_row.to_bottom = True
-            for column_name, value in row_data.items():
+            for column_name, value in mapped_column.items():
                 column_id = column_dict[column_name]
                 cell = smartsheet.models.Cell()
                 cell.column_id = column_id
@@ -249,51 +252,111 @@ class SmartSheetApi:
         self.smartsheet_client.Sheets.delete_rows(self.sheet_id, row_id)
 
 
-    def compare_data(self, data_to_compare, compare_column, sheet_data=None):
-        """Compares the sheet data with the data to compare and returns the differences.
-
-        Args:
-            data_to_compare (pandas DataFrame): The data to compare to the sheet data.
-            compare_column (str): The name of the column to compare.
-            sheet_data (pandas DataFrame, optional): The sheet data to compare. If not provided, the sheet data will be fetched from Smartsheet.
+    def get_data(self):
+        """Retrieves all the data from the sheet.
 
         Returns:
-            tuple: A tuple containing a boolean indicating whether there were differences and a dataframe of the differences.
+            pandas DataFrame: A DataFrame containing all the data from the sheet.
         """
-        if sheet_data is None:
-            sheet_data = self.get_data()
-            sheet_data_values = set(sheet_data[compare_column])
-            data_to_compare_values = set(data_to_compare[compare_column])
-            differences = sheet_data_values.symmetric_difference(data_to_compare_values)
-            
-            if differences:
-                return (True, data_to_compare[data_to_compare[compare_column].isin(differences)])
-            else:
-                return (False, None)
-
-
-    def update_data(self, data_to_compare, compare_column, sheet_data=None):
-        """Updates the sheet data with the data to compare.
+        # - Fetch the sheet data
+        columns_ids = self.sheet_columns.values()
+        rows = self.smartsheet_client.Sheets.get_sheet(self.sheet_id).rows
         
-        Args:
-            data_to_compare (pandas DataFrame): The data to compare to the sheet data.
-            compare_column (str): The name of the column to compare.
-            sheet_data (pandas DataFrame, optional): The sheet data to compare. If not provided, the sheet data will be fetched from Smartsheet.
+        # - Build the data frame
+        data = {}
+        for row in rows:
+            row_data = {}
+            has_data = False
+            
+            for cell in row.cells:
+                column = next(c for c in columns_ids if c == cell.column_id)
+                row_data['row'] = row.id
+                row_data[column] = cell.value
+                has_data = True
+            if has_data:
+                item_id = row_data.get(self.key_column_id)
+                
+                if item_id is not None:
+                    data[item_id] = row_data
+                else:
+                    row_data.clear()
+        return data
+
+
+    def compare_data(self, excel_data):
         """
-        if sheet_data is None:
-            sheet_data = self.get_data()
-            differences = self.compare_data(data_to_compare, compare_column, sheet_data)
-            rows_to_update = []
+            Compares the provided excel data with the Smartsheet data and returns the differences between them.
+
+            Args:
+                excel_data (dict): The data to compare to the Smartsheet data. A dictionary with the item ID as key and the
+                    sub-dictionary containing the data to compare as value.
+                self.key_column_id (str): The name of the key representing the item ID.
+                smartsheet_data (dict, optional): The Smartsheet data to compare with. If not provided, the sheet data will be
+                    fetched from Smartsheet.
+
+            Returns:
+                dict: A dictionary containing the differences between the two datasets. The dictionary contains the item ID as
+                    key and the sub-dictionary of differences as value. The sub-dictionary of differences contains only the keys
+                    that exist in both datasets and have different values.
+        """        
+
+        if self.smartsheet_data is None:
+            self.smartsheet_data = self.get_data()
+
+        differences = {}
+
+        for key in excel_data.keys() & self.smartsheet_data.keys():
+            subdict1 = self.smartsheet_data[key]
+            subdict2 = excel_data[key]
+            subdict_diff = {}
             
-            for index, row in sheet_data.iterrows():
-                if row[compare_column] in differences[1][compare_column]:
-                    compare_row = data_to_compare[data_to_compare[compare_column] == row[compare_column]]
-                    row_to_update = {}
-                    row_to_update["row_id"] = row["row_id"]
-                    
-                    for col in sheet_data.columns:
-                        if row[col] != compare_row[col]:
-                            row_to_update[col] = compare_row[col]
-                    rows_to_update.append(row_to_update)
+            # Compare sub-dictionaries
+            for subkey in subdict1.keys() & subdict2.keys():
+                if subdict1[subkey] != subdict2[subkey]:
+                    subdict_diff[subkey] = (subdict1[subkey], subdict2[subkey])
+
+            if subdict_diff:
+                differences[key] = subdict_diff
+        return differences
+
+
+    def update_data(self, excel_data):
+        """Updates the sheet data with the data to compare.
+
+        Args:
+            excel_data (dict): The data to compare to the sheet data.
+            self.key_column_id (str): The name of the column containing the item IDs.
+            smartsheet_data (dict, optional): The sheet data to compare. If not provided, the sheet data will be fetched from Smartsheet.
+        """
+        if self.smartsheet_data is None:
+            self.smartsheet_data = self.get_data()
+
+        differences = self.compare_data(excel_data)
+        if not differences:
+            return 'No differences found, nothing to update.'
+
+        rows_to_update = []
+        for row_id, row_changes in differences.items():
+            row = self.smartsheet_data[row_id].get("row")
+            cells_to_update = []
+            for col_id, (old_value, new_value) in row_changes.items():
+                new_cell = self.smartsheet_client.models.Cell()
+                new_cell.column_id = col_id
+                new_cell.value = new_value
+                cells_to_update.append(new_cell)
             
-            self.update_rows(rows_to_update, self.get_columns())
+            new_row = self.smartsheet_client.models.Row()
+            new_row.id = row
+            new_row.cells = cells_to_update
+            rows_to_update.append(new_row)
+
+
+        self.smartsheet_client.Sheets.update_rows(
+            self.sheet_id, 
+            rows_to_update        
+        )
+
+
+        return 'Update successful.'
+
+

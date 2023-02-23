@@ -19,7 +19,7 @@ def insert_data_to_smartsheet(excel_data, sheet_manager):
     column_dict = sheet_manager.get_columns()
 
     # Create a list of dictionaries, where each dictionary represents a row in the smartsheet
-    rows_data = [
+    mapped_columns = [
         {
             "ITEM#": row["Item ID"],
             "ITEM DESCRIPTION": row["Item Description"],
@@ -31,12 +31,12 @@ def insert_data_to_smartsheet(excel_data, sheet_manager):
         }
         for row in excel_data
     ]
+    print(mapped_columns)
 
     try:
         # Insert the rows into the smartsheet
-        added_rows = sheet_manager.add_rows(rows_data, column_dict)
+        sheet_manager.add_rows(mapped_columns = mapped_columns, column_dict = column_dict)
         print("Data inserted successfully!")
-        print(added_rows)
     except Exception as e:
         # If there's an error, display an error message
         print("Error inserting data: ", str(e))
