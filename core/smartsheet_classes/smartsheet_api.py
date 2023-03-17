@@ -1,6 +1,6 @@
 import smartsheet
 import pandas as pd
-from smartsheet_functions.client import create_smartsheet_client
+from core.smartsheet_functions.client import create_smartsheet_client
 
 
 class SmartSheetApi:

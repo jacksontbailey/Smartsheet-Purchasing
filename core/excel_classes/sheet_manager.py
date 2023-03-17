@@ -10,10 +10,11 @@ class ExcelSheetManager:
         table_name (str, optional): The name of the table within the tab to be read.
     """
     
-    def __init__(self, file_name, file_location, tab_name, table_name=None):
+    def __init__(self, file_name = None, file_location=None, tab_name=None, filebrowse_url=None, table_name=None):
         self.file_name = file_name
         self.file_location = file_location
         self.tab_name = tab_name
+        self.filebrowse_url = filebrowse_url
         self.table_name = table_name
         self.data = None
 
@@ -26,7 +27,11 @@ class ExcelSheetManager:
         """
 
         try:
-            df = pd.read_excel(f"{self.file_location}\{self.file_name}.xlsx", sheet_name=self.tab_name, engine='openpyxl', header=0)
+            if self.filebrowse_url:
+                df = pd.read_excel(f"{self.filebrowse_url}", sheet_name=self.tab_name, engine='openpyxl', header=0)
+            else:
+                df = pd.read_excel(f"{self.file_location}\{self.file_name}.xlsx", sheet_name=self.tab_name, engine='openpyxl', header=0)
+
             if df.empty:
                 raise ValueError(f'The {self.tab_name} tab is empty')
             

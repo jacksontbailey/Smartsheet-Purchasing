@@ -46,44 +46,48 @@ License:
 
 """
 
-import sys
 
-from input_questions import InputQuestions
-from smartsheet_functions.create_new_sheet import create_new_smartsheet
-from smartsheet_functions.import_excel_data import import_excel_data
 
+from core.gui.create_smartsheet_window import create_new_smartsheet_window
+from core.gui.import_sheet_window import import_sheet_window
+from core.smartsheet_functions.import_excel_data import import_excel_data
+import PySimpleGUI as sg
 
 def main():
-    """
-    The main function serves as the entry point for the script and provides \
-    a user-friendly interface to interact with the functionality provided by the code.
-    """
-    input_question = InputQuestions()
-    while not input_question.end:
-        try:
-            # - Grab Currrent Time Before Running the Code
-            option_selected = input_question.main_script_options()
+    sg.theme("DarkTeal6")
+    # define the layout for the main GUI window
+    layout = [
+        [sg.Text('What would you like to do?')],
+        [sg.Button('Create a New SmartSheet', key='new_sheet')],
+        [sg.Button('Import Data to a Newly Created Sheet', key='import_sheet')],
+        [sg.Button('Update Existing SmartSheet with Excel File', key='update_sheet')],
+        [sg.Button('Exit', key='exit')]
+    ]
 
-            if option_selected == 'Create New SmartSheet':
-                new_sheet_name = input_question.name_new_smartsheet()
-                create_new_smartsheet(sheet_name = new_sheet_name)
+    # create the main GUI window
+    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout)
 
-            elif option_selected == 'Import Data into Existing Sheet' or 'Update Existing SmartSheet with Excel File':
-                import_excel_data(input_question = input_question, option = option_selected)
-            
-            else:
-                print("Incorrect input")
+    # event loop for the main GUI window
+    while True:
+        event, values = window.read()
+        if event == sg.WINDOW_CLOSED or event == 'exit':
+            break
+        elif event == 'new_sheet':
+            window.hide()
+            create_new_smartsheet_window()
+            window.un_hide()
+        elif event == 'import_sheet':
+            window.hide()
+            import_sheet_window("Import", import_excel_data, event)
+            window.un_hide()
+        elif event == 'update_sheet':
+            window.hide()
+            import_sheet_window("Update", import_excel_data, event)
+            window.un_hide()
 
+    # close the main GUI window
+    window.close()
 
-        except FileNotFoundError as caught_error:
-            print(f"File not found: {caught_error}")
-        except ValueError as caught_error:
-            print(f"Value error: {caught_error}")
-        except Exception as caught_error:
-            print(f"Unexpected error: {caught_error}")
-
-    sys.exit("Finished Smartsheet Purchasing Sheet Creation.")
-
-
+# run the main GUI window
 if __name__ == "__main__":
     main()

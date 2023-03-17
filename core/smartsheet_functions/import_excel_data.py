@@ -1,12 +1,11 @@
-from config import settings
-from excel_classes.sheet_manager import ExcelSheetManager
-from smartsheet_classes.smartsheet_api import SmartSheetApi
-from smartsheet_functions.insert_data_to_smartsheet import insert_data_to_smartsheet
-from smartsheet_functions.update_data_in_smartsheet import update_smartsheet
+from core.config import settings
+from core.excel_classes.sheet_manager import ExcelSheetManager
+from core.smartsheet_classes.smartsheet_api import SmartSheetApi
+from core.smartsheet_functions.insert_data_to_smartsheet import insert_data_to_smartsheet
+from core.smartsheet_functions.update_data_in_smartsheet import update_smartsheet
 
 
-
-def import_excel_data(input_question, option):
+def import_excel_data(option, url, smartsheet_name):
     """
     Imports data from an Excel sheet into a Smartsheet.
     
@@ -19,26 +18,23 @@ def import_excel_data(input_question, option):
         None: This function does not return any value.
     
     """
-    TARGET_EXCEL_FILE = input_question.select_excel_sheet()
 
     excel_data = ExcelSheetManager(
-        file_name = TARGET_EXCEL_FILE, 
-        file_location = settings.EXCEL_FOLDER, 
+        filebrowse_url = url,
         tab_name = settings.EXCEL_TAB, 
         table_name = settings.TABLE_NAME
     )
 
-    TARGET_SHEET = input_question.select_smartsheet_name()
 
     sheet_manager = SmartSheetApi(
         api_key = settings.API_KEY, 
-        sheet_name = TARGET_SHEET,
+        sheet_name = smartsheet_name,
         workspace_id = int(settings.WORKSPACE_ID)
     )
 
     sheet_manager.get_sheet_id_by_name()
 
-    if option == 'Import Data into Existing Sheet':
+    if option == 'import_sheet':
         insert_data_to_smartsheet(
                 excel_data = excel_data.read_data(),
                 sheet_manager = sheet_manager
