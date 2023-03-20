@@ -56,16 +56,23 @@ import PySimpleGUI as sg
 def main():
     sg.theme("DarkTeal6")
     # define the layout for the main GUI window
-    layout = [
-        [sg.Text('What would you like to do?')],
-        [sg.Button('Create a New SmartSheet', key='new_sheet')],
-        [sg.Button('Import Data to a Newly Created Sheet', key='import_sheet')],
-        [sg.Button('Update Existing SmartSheet with Excel File', key='update_sheet')],
-        [sg.Button('Exit', key='exit')]
+
+    frame_layout = [
+        [sg.Button("Import Data", key='import_sheet', tooltip='Import excel data into an empty smartsheet', button_color=('white', '#C4961B'), expand_x=True, pad=((15, 7.5), (20, 10))),
+         sg.Button("Update Sheet", key='update_sheet', tooltip='Update the existing smartsheet with an excel file', expand_x=True, pad=((7.5, 15), (20, 10)))],
+        [sg.Button('Create Sheet', key='new_sheet', tooltip='Create a new smartsheet', expand_x=True, pad=(15,(10,20)))],
     ]
 
+    layout = [
+        [sg.Frame('Smartsheet Actions', frame_layout, font='Any 16', title_color='white', expand_x=True)],
+        [sg.Push(), sg.Button("Exit", key='exit', tooltip='Exit the Application', size=10)]
+    ]
+
+
     # create the main GUI window
-    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout)
+    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout, size=(400, 200), resizable=True, finalize=True)
+
+    window['new_sheet'].set_cursor(cursor="trek")
 
     # event loop for the main GUI window
     while True:
@@ -75,14 +82,19 @@ def main():
         elif event == 'new_sheet':
             window.hide()
             create_new_smartsheet_window()
+            sg.popup_no_titlebar("Successfully created a new SmartSheet!")
             window.un_hide()
+
         elif event == 'import_sheet':
             window.hide()
             import_sheet_window("Import", import_excel_data, event)
+            sg.popup_no_titlebar("Successfully imported excel data into your SmartSheet!")
             window.un_hide()
+
         elif event == 'update_sheet':
             window.hide()
             import_sheet_window("Update", import_excel_data, event)
+            sg.popup_no_titlebar("Successfully updated your SmartSheet with the provided excel data!")
             window.un_hide()
 
     # close the main GUI window
