@@ -58,43 +58,42 @@ def main():
     # define the layout for the main GUI window
 
     frame_layout = [
-        [sg.Button("Import Data", key='import_sheet', tooltip='Import excel data into an empty smartsheet', button_color=('white', '#C4961B'), expand_x=True, pad=((15, 7.5), (20, 10))),
-         sg.Button("Update Sheet", key='update_sheet', tooltip='Update the existing smartsheet with an excel file', expand_x=True, pad=((7.5, 15), (20, 10)))],
-        [sg.Button('Create Sheet', key='new_sheet', tooltip='Create a new smartsheet', expand_x=True, pad=(15,(10,20)))],
+        [sg.Button("Import Data", border_width=0, k='-IMPORT-', tooltip='Import excel data into an empty smartsheet', button_color=('white', '#C4961B'), expand_x=True, p=((30, 7.5), (20, 10))),
+         sg.Button("Update Sheet", border_width=0, k='-UPDATE-', tooltip='Update the existing smartsheet with an excel file', expand_x=True, p=((7.5, 30), (20, 10)))],
+        [sg.Button('Create Sheet', border_width=0, k='-NEW-', tooltip='Create a new smartsheet', expand_x=True, p=(30,(10,20)))],
     ]
 
     layout = [
         [sg.Frame('Smartsheet Actions', frame_layout, font='Any 16', title_color='white', expand_x=True)],
-        [sg.Push(), sg.Button("Exit", key='exit', tooltip='Exit the Application', size=10)]
+        [sg.Push(), sg.Cancel(button_text="Exit", k='exit', s=10)]
     ]
 
-
     # create the main GUI window
-    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout, size=(400, 200), resizable=True, finalize=True)
+    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout, size=(400, 200), finalize=True)
 
-    window['new_sheet'].set_cursor(cursor="trek")
+    window['-NEW-'].set_cursor(cursor="hand2")
+    window['-UPDATE-'].set_cursor(cursor="hand2")
+    window['-IMPORT-'].set_cursor(cursor="hand2")
+    window['exit'].set_cursor(cursor="hand2")
 
     # event loop for the main GUI window
     while True:
         event, values = window.read()
         if event == sg.WINDOW_CLOSED or event == 'exit':
             break
-        elif event == 'new_sheet':
+        elif event == '-NEW-':
             window.hide()
             create_new_smartsheet_window()
-            sg.popup_no_titlebar("Successfully created a new SmartSheet!")
             window.un_hide()
 
-        elif event == 'import_sheet':
+        elif event == '-IMPORT-':
             window.hide()
             import_sheet_window("Import", import_excel_data, event)
-            sg.popup_no_titlebar("Successfully imported excel data into your SmartSheet!")
             window.un_hide()
 
-        elif event == 'update_sheet':
+        elif event == '-UPDATE-':
             window.hide()
             import_sheet_window("Update", import_excel_data, event)
-            sg.popup_no_titlebar("Successfully updated your SmartSheet with the provided excel data!")
             window.un_hide()
 
     # close the main GUI window
