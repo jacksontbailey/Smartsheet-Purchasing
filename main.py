@@ -1,22 +1,22 @@
-"""This module provides utility functions and classes for working with the SmartSheet API.
+"""This module provides utility functions and classes for working with the Smartsheet API.
 
 The functions in this module can be used to create, read, write, and delete
-the sheets and the sheets' data in SmartSheets. It can also be used to read data 
+the sheets and the sheets' data in Smartsheets. It can also be used to read data 
 from an Excel file and add it to an existing sheet.
 
 
 The module contains the following functions:
-    - create_new_smartsheet
-    - create_smartsheet_client
+    - create_new_Smartsheet
+    - create_Smartsheet_client
     - import_excel_data
-    - insert_data_to_smartsheet
+    - insert_data_to_Smartsheet
 
     
 The module contains the following classes:
     - ExcelSheetManager
     - InputQuestions
     - Settings
-    - SmartSheetApi
+    - SmartsheetApi
 
 Author:
     @ Jackson Bailey - 2023.02.14
@@ -58,18 +58,18 @@ def main():
     # define the layout for the main GUI window
 
     frame_layout = [
-        [sg.Button("Import Data", border_width=0, k='-IMPORT-', tooltip='Import excel data into an empty smartsheet', button_color=('white', '#C4961B'), expand_x=True, p=((30, 7.5), (20, 10))),
-         sg.Button("Update Sheet", border_width=0, k='-UPDATE-', tooltip='Update the existing smartsheet with an excel file', expand_x=True, p=((7.5, 30), (20, 10)))],
-        [sg.Button('Create Sheet', border_width=0, k='-NEW-', tooltip='Create a new smartsheet', expand_x=True, p=(30,(10,20)))],
+        [sg.Button("Import Data", border_width=0, k='-IMPORT-', tooltip='Import excel data into an empty Smartsheet', button_color=('white', '#C4961B'), expand_x=True, p=((30, 7.5), (20, 10))),
+         sg.Button("Update Sheet", border_width=0, k='-UPDATE-', tooltip='Update the existing Smartsheet with an excel file', expand_x=True, p=((7.5, 30), (20, 10)))],
+        [sg.Button('Create Sheet', border_width=0, k='-NEW-', tooltip='Create a new Smartsheet', expand_x=True, p=(30,(10, 20)))],
     ]
 
     layout = [
-        [sg.Frame('Smartsheet Actions', frame_layout, font='Any 16', title_color='white', expand_x=True)],
-        [sg.Push(), sg.Cancel(button_text="Exit", k='exit', s=10)]
+        [sg.Frame('Smartsheet Actions', frame_layout, background_color='#002852', font='Any 16', title_color='white', expand_x=True)],
+        [sg.Push(background_color='#002852'), sg.Cancel(button_text="Exit", k='exit', s=10, pad=((0, 5), (10, 0)))]
     ]
 
     # create the main GUI window
-    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout, size=(400, 200), finalize=True)
+    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout, background_color='#002852', finalize=True, size=(400, 200))
 
     window['-NEW-'].set_cursor(cursor="hand2")
     window['-UPDATE-'].set_cursor(cursor="hand2")

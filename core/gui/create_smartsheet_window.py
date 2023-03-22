@@ -2,21 +2,30 @@ from core.smartsheet_functions.create_new_sheet import create_new_smartsheet
 import PySimpleGUI as sg
 
 def create_new_smartsheet_window():
-    # create the layout for the new SmartSheet window
-    layout = [
-        [sg.T('What do you want to call your new SmartSheet?')],
-        [sg.Input(key='-IN-')],
-        [sg.B('Create', border_width=0, key='-CREATE-'), sg.Cancel()]
+    # create the layout for the new Smartsheet window
+    frame_layout = [
+        [sg.T('What do you want to call your new Smartsheet?', background_color='#002852', expand_x=True, pad=((30, (20, 5))))],
+        [sg.Input(key='-IN-', expand_x=True, pad=((30, (5, 20))))],
     ]
 
-    # create the new SmartSheet window
-    window = sg.Window('New SmartSheet', layout, finalize=True)
+    layout = [
+        [sg.Frame('Create a Smartsheet', frame_layout, background_color='#002852', font='Any 16', title_color='white', expand_x=True)],
+        
+        [
+            sg.Push(background_color='#002852'), 
+            sg.B('Create', button_color=('#C4961B', '#FEFDFD'), k='-CREATE-', s=10, enable_events=True, pad=((0, 5), (20, 0))), 
+            sg.Cancel(button_color=('#C4961B', '#FEFDFD'), s=10, pad=((5, 5), (20, 0)))
+        ],
+    ]
+
+    # create the new Smartsheet window
+    window = sg.Window('New Smartsheet', layout, background_color='#002852', finalize=True, size=(400, 200))
     
     window['-CREATE-'].set_cursor(cursor="hand2")
     window['Cancel'].set_cursor(cursor="hand2")
 
     try:
-        # event loop for the new SmartSheet window
+        # event loop for the new Smartsheet window
         while True:
             event, values = window.read()
             if event == sg.WINDOW_CLOSED or event == 'Cancel':
@@ -24,9 +33,15 @@ def create_new_smartsheet_window():
                 break
             elif event == '-CREATE-':
                 new_sheet_name = values['-IN-']
+                
+                if not new_sheet_name:
+                    sg.popup_error("Form is missing data.", background_color='#002852')
+                    window.close()
+                    break
+
                 create_new_smartsheet(new_sheet_name)
                 window.close()
-                sg.popup_auto_close(title="Successfully created a new SmartSheet!", auto_close_duration=2)
+                sg.popup_auto_close(title="Successfully created a new Smartsheet!", auto_close_duration=2)
                 return
     
     except Exception as e:
