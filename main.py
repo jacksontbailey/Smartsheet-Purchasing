@@ -51,25 +51,27 @@ License:
 from core.gui.create_smartsheet_window import create_new_smartsheet_window
 from core.gui.import_sheet_window import import_sheet_window
 from core.smartsheet_functions.import_excel_data import import_excel_data
+from pathlib import Path
 import PySimpleGUI as sg
 
+
 def main():
-    sg.theme("DarkTeal6")
     # define the layout for the main GUI window
 
     frame_layout = [
-        [sg.Button("Import Data", border_width=0, k='-IMPORT-', tooltip='Import excel data into an empty Smartsheet', button_color=('white', '#C4961B'), expand_x=True, p=((30, 7.5), (20, 10))),
-         sg.Button("Update Sheet", border_width=0, k='-UPDATE-', tooltip='Update the existing Smartsheet with an excel file', expand_x=True, p=((7.5, 30), (20, 10)))],
-        [sg.Button('Create Sheet', border_width=0, k='-NEW-', tooltip='Create a new Smartsheet', expand_x=True, p=(30,(10, 20)))],
+        [sg.Button("Import Data", border_width=0, font=('any 10 bold' ), k='-IMPORT-', tooltip='Import excel data into an empty Smartsheet', expand_x=True, p=((30, 7.5), (20, 10))),
+         sg.Button("Update Sheet", border_width=0, font=('any 10 bold' ), k='-UPDATE-', tooltip='Update the existing Smartsheet with an excel file', expand_x=True, p=((7.5, 30), (20, 10)))],
+        [sg.Button('Create Sheet', border_width=0, font=('any 10 bold' ), k='-NEW-', tooltip='Create a new Smartsheet', expand_x=True, p=(30,(10, 20)))],
     ]
 
     layout = [
-        [sg.Frame('Smartsheet Actions', frame_layout, background_color='#002852', font='Any 16', title_color='white', expand_x=True)],
-        [sg.Push(background_color='#002852'), sg.Cancel(button_text="Exit", k='exit', s=10, pad=((0, 5), (10, 0)))]
+        [sg.Frame('Smartsheet Actions', frame_layout, font='Any 16', title_color='white', expand_x=True, pad=((10), 0))],
+        [sg.Push(), sg.Cancel(button_text="Exit", font=('any 10 bold' ), k='exit', s=10, pad=((0, 10), (10, 0)))]
     ]
 
     # create the main GUI window
-    window = sg.Window('PSC - Purchasing Smartsheet Creator', layout, background_color='#002852', finalize=True, size=(400, 200))
+    window_title = settings['GUI']['title']
+    window = sg.Window(window_title, layout, finalize=True, size=(400, 225), return_keyboard_events=True)
 
     window['-NEW-'].set_cursor(cursor="hand2")
     window['-UPDATE-'].set_cursor(cursor="hand2")
@@ -101,4 +103,33 @@ def main():
 
 # run the main GUI window
 if __name__ == "__main__":
+    SETTINGS_PATH = Path.cwd()
+
+    settings = sg.UserSettings(
+        path=f'{SETTINGS_PATH}/core', filename='config.ini', use_config_file=True, convert_bools_and_none=True
+    )
+    theme = settings['GUI']['theme']
+    font_family = settings['GUI']['font_family']
+    font_size = int(settings['GUI']['font_size'])
+    dark_blue = settings['COLORS']['dark_blue']
+    lighter_blue = settings['COLORS']['lighter_blue']
+    gold = settings['COLORS']['gold']
+    grey = settings['COLORS']['grey']
+
+    sg.theme(theme)
+    sg.set_options(
+        font = (font_family, font_size),
+        background_color = dark_blue,
+        button_color = (gold, grey),
+        border_width=0,
+        element_background_color = (dark_blue),
+        text_element_background_color = (dark_blue),
+        input_elements_background_color = (grey),
+        use_ttk_buttons=True,
+        use_custom_titlebar = True,
+        titlebar_background_color = lighter_blue,
+        titlebar_text_color = grey,
+        titlebar_font = (font_family, 11)
+    )
+
     main()

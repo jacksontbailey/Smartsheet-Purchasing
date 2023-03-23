@@ -13,8 +13,8 @@ def create_new_smartsheet_window():
         
         [
             sg.Push(background_color='#002852'), 
-            sg.B('Create', button_color=('#C4961B', '#FEFDFD'), k='-CREATE-', s=10, enable_events=True, pad=((0, 5), (20, 0))), 
-            sg.Cancel(button_color=('#C4961B', '#FEFDFD'), s=10, pad=((5, 5), (20, 0)))
+            sg.B('Create', button_color=('#C4961B', '#FEFDFD'), font=('any 10 bold' ), k='-CREATE-', s=10, enable_events=True, pad=((0, 5), (20, 0))), 
+            sg.Cancel(button_color=('#C4961B', '#FEFDFD'), font=('any 10 bold' ), s=10, pad=((5, 5), (20, 0)))
         ],
     ]
 
