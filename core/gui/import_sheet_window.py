@@ -7,7 +7,7 @@ def import_sheet_window(btn, import_function, option):
         [sg.T("What is the name of the Smartsheet you want to use?", expand_x=True, pad=((30, (10, 5))))], 
         [sg.Input(k='-SHEET NAME-', expand_x=True, pad=((30, (5, 10))))],
         [sg.T(text="Select an excel document to import to your Smartsheet.", pad=((30, (10, 5))))], 
-        [sg.Input(k='-ATTACHMENT-', size=40, pad=((30, 5), (5, 20))), 
+        [sg.Input(k='-ATTACHMENT-', size=40, pad=((30, 10), (5, 20))), 
         sg.FileBrowse(file_types=(("Excel Files", "*.xls*"),), font=('any 10 bold' ), size=10, pad=((5, 30), (5, 20)), change_submits=True)],
     ]
 

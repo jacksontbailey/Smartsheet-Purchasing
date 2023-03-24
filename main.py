@@ -53,6 +53,19 @@ from core.gui.import_sheet_window import import_sheet_window
 from core.smartsheet_functions.import_excel_data import import_excel_data
 from pathlib import Path
 import PySimpleGUI as sg
+import sys
+import os
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 def main():
@@ -64,7 +77,7 @@ def main():
     ]
 
     layout = [
-        [sg.Frame('Smartsheet Actions', frame_layout, font='Any 16', title_color='white', expand_x=True, pad=((10), 0))],
+        [sg.Frame('Smartsheet Actions', frame_layout, font='Any 16', expand_x=True, pad=((10), 0))],
         [sg.Push(), sg.Cancel(button_text="Exit", font=('any 10 bold' ), k='exit', s=10, pad=((0, 10), (10, 0)))]
     ]
 
@@ -102,15 +115,17 @@ def main():
 
 # run the main GUI window
 if __name__ == "__main__":
-    SETTINGS_PATH = Path.cwd()
+    SETTINGS_PATH = resource_path('core')
 
     settings = sg.UserSettings(
-        path=f'{SETTINGS_PATH}/core', filename='config.ini', use_config_file=True, convert_bools_and_none=True
+        path=SETTINGS_PATH, filename='config.ini', use_config_file=True, convert_bools_and_none=True
     )
 
     theme = settings['GUI']['theme']
     font_family = settings['GUI']['font_family']
     font_size = int(settings['GUI']['font_size'])
+    titlebar_font_size = int(settings['GUI']['titlebar_font_size'])
+    
     dark_blue = settings['COLORS']['dark_blue']
     lighter_blue = settings['COLORS']['lighter_blue']
     white = settings['COLORS']['white']
@@ -118,19 +133,20 @@ if __name__ == "__main__":
 
     sg.theme(theme)
     sg.set_options(
-        font = (font_family, font_size),
         background_color = dark_blue,
-        button_color = (white, french_gray),
         border_width=0,
+        button_color = (white, french_gray),
         element_background_color = (dark_blue),
-        text_element_background_color = (dark_blue),
+        font = (font_family, font_size),
+        icon='icon.ico',
         input_elements_background_color = (french_gray),
         input_text_color= dark_blue,
-        use_ttk_buttons=True,
-        use_custom_titlebar = True,
+        text_element_background_color = (dark_blue),
         titlebar_background_color = lighter_blue,
         titlebar_text_color = french_gray,
         titlebar_font = (font_family, 11),
+        use_custom_titlebar = True,
+        use_ttk_buttons=True,
     )
 
     main()
