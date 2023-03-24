@@ -4,22 +4,22 @@ import PySimpleGUI as sg
 def create_new_smartsheet_window():
     # create the layout for the new Smartsheet window
     frame_layout = [
-        [sg.T('What do you want to call your new Smartsheet?', background_color='#002852', expand_x=True, pad=((30, (20, 5))))],
+        [sg.T('What do you want to call your new Smartsheet?', expand_x=True, pad=((30, (20, 5))))],
         [sg.Input(key='-IN-', expand_x=True, pad=((30, (5, 20))))],
     ]
 
     layout = [
-        [sg.Frame('Create a Smartsheet', frame_layout, background_color='#002852', font='Any 16', title_color='white', expand_x=True)],
+        [sg.Frame('Create a Smartsheet', frame_layout, font='Any 16', expand_x=True)],
         
         [
-            sg.Push(background_color='#002852'), 
-            sg.B('Create', button_color=('#C4961B', '#FEFDFD'), font=('any 10 bold' ), k='-CREATE-', s=10, enable_events=True, pad=((0, 5), (20, 0))), 
-            sg.Cancel(button_color=('#C4961B', '#FEFDFD'), font=('any 10 bold' ), s=10, pad=((5, 5), (20, 0)))
+            sg.Push(), 
+            sg.B('Create', font=('any 10 bold' ), k='-CREATE-', s=10, enable_events=True, pad=((0, 5), (20, 0))), 
+            sg.Cancel(font=('any 10 bold' ), s=10, pad=((5, 5), (20, 0)))
         ],
     ]
 
     # create the new Smartsheet window
-    window = sg.Window('New Smartsheet', layout, background_color='#002852', finalize=True, size=(400, 200))
+    window = sg.Window('New Smartsheet', layout, finalize=True, size=(400, 200))
     
     window['-CREATE-'].set_cursor(cursor="hand2")
     window['Cancel'].set_cursor(cursor="hand2")
@@ -35,7 +35,7 @@ def create_new_smartsheet_window():
                 new_sheet_name = values['-IN-']
                 
                 if not new_sheet_name:
-                    sg.popup_error("Form is missing data.", background_color='#002852')
+                    sg.popup_error("Form is missing data.")
                     window.close()
                     break
 

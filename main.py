@@ -57,7 +57,6 @@ import PySimpleGUI as sg
 
 def main():
     # define the layout for the main GUI window
-
     frame_layout = [
         [sg.Button("Import Data", border_width=0, font=('any 10 bold' ), k='-IMPORT-', tooltip='Import excel data into an empty Smartsheet', expand_x=True, p=((30, 7.5), (20, 10))),
          sg.Button("Update Sheet", border_width=0, font=('any 10 bold' ), k='-UPDATE-', tooltip='Update the existing Smartsheet with an excel file', expand_x=True, p=((7.5, 30), (20, 10)))],
@@ -108,28 +107,30 @@ if __name__ == "__main__":
     settings = sg.UserSettings(
         path=f'{SETTINGS_PATH}/core', filename='config.ini', use_config_file=True, convert_bools_and_none=True
     )
+
     theme = settings['GUI']['theme']
     font_family = settings['GUI']['font_family']
     font_size = int(settings['GUI']['font_size'])
     dark_blue = settings['COLORS']['dark_blue']
     lighter_blue = settings['COLORS']['lighter_blue']
-    gold = settings['COLORS']['gold']
-    grey = settings['COLORS']['grey']
+    white = settings['COLORS']['white']
+    french_gray = settings['COLORS']['french_gray']
 
     sg.theme(theme)
     sg.set_options(
         font = (font_family, font_size),
         background_color = dark_blue,
-        button_color = (gold, grey),
+        button_color = (white, french_gray),
         border_width=0,
         element_background_color = (dark_blue),
         text_element_background_color = (dark_blue),
-        input_elements_background_color = (grey),
+        input_elements_background_color = (french_gray),
+        input_text_color= dark_blue,
         use_ttk_buttons=True,
         use_custom_titlebar = True,
         titlebar_background_color = lighter_blue,
-        titlebar_text_color = grey,
-        titlebar_font = (font_family, 11)
+        titlebar_text_color = french_gray,
+        titlebar_font = (font_family, 11),
     )
 
     main()
