@@ -31,7 +31,6 @@ def insert_data_to_smartsheet(excel_data, sheet_manager):
         }
         for row in excel_data
     ]
-    print(mapped_columns)
 
     try:
         # Insert the rows into the smartsheet

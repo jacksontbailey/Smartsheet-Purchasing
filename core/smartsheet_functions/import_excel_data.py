@@ -1,8 +1,8 @@
-from core.config import settings
-from core.excel_classes.sheet_manager import ExcelSheetManager
-from core.smartsheet_classes.smartsheet_api import SmartSheetApi
-from core.smartsheet_functions.insert_data_to_smartsheet import insert_data_to_smartsheet
-from core.smartsheet_functions.update_data_in_smartsheet import update_smartsheet
+from ..config import settings
+from ..excel_classes.sheet_manager import ExcelSheetManager
+from ..smartsheet_classes.smartsheet_api import SmartSheetApi
+from ..smartsheet_functions.insert_data_to_smartsheet import insert_data_to_smartsheet
+from ..smartsheet_functions.update_data_in_smartsheet import update_smartsheet
 
 
 def import_excel_data(option, url, smartsheet_name):
@@ -19,6 +19,8 @@ def import_excel_data(option, url, smartsheet_name):
     
     """
 
+    workspace = int(settings.WORKSPACE_ID)
+
     excel_data = ExcelSheetManager(
         filebrowse_url = url,
         tab_name = settings.EXCEL_TAB, 
@@ -29,12 +31,12 @@ def import_excel_data(option, url, smartsheet_name):
     sheet_manager = SmartSheetApi(
         api_key = settings.API_KEY, 
         sheet_name = smartsheet_name,
-        workspace_id = int(settings.WORKSPACE_ID)
+        workspace_id = workspace
     )
 
     sheet_manager.get_sheet_id_by_name()
 
-    if option == 'import_sheet':
+    if option == '-IMPORT-':
         insert_data_to_smartsheet(
                 excel_data = excel_data.read_data(),
                 sheet_manager = sheet_manager
@@ -45,3 +47,5 @@ def import_excel_data(option, url, smartsheet_name):
             excel_data = excel_data.read_data(),
             sheet_manager = sheet_manager
         )
+    
+    return

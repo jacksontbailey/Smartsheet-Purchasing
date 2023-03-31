@@ -53,6 +53,7 @@ from core.gui.import_sheet_window import import_sheet_window
 from core.smartsheet_functions.import_excel_data import import_excel_data
 from pathlib import Path
 import PySimpleGUI as sg
+import traceback
 import sys
 import os
 
@@ -90,35 +91,39 @@ def main():
     window['-IMPORT-'].set_cursor(cursor="hand2")
     window['exit'].set_cursor(cursor="hand2")
 
-    # event loop for the main GUI window
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == 'exit':
-            break
-        elif event == '-NEW-':
-            window.hide()
-            create_new_smartsheet_window()
-            window.un_hide()
+    try:
+        # event loop for the main GUI window
+        while True:
+            event, values = window.read()
+            if event == sg.WINDOW_CLOSED or event == 'exit':
+                break
+            elif event == '-NEW-':
+                window.hide()
+                create_new_smartsheet_window()
+                window.un_hide()
 
-        elif event == '-IMPORT-':
-            window.hide()
-            import_sheet_window("Import", import_excel_data, event)
-            window.un_hide()
+            elif event == '-IMPORT-':
+                window.hide()
+                import_sheet_window("Import", import_excel_data, event)
+                window.un_hide()
 
-        elif event == '-UPDATE-':
-            window.hide()
-            import_sheet_window("Update", import_excel_data, event)
-            window.un_hide()
+            elif event == '-UPDATE-':
+                window.hide()
+                import_sheet_window("Update", import_excel_data, event)
+                window.un_hide()
 
-    # close the main GUI window
-    window.close()
+        # close the main GUI window
+        window.close()
+    except Exception as e:
+        print("Error")
+        print(traceback.format_exc())
 
 # run the main GUI window
 if __name__ == "__main__":
     SETTINGS_PATH = resource_path('core')
 
     settings = sg.UserSettings(
-        path=SETTINGS_PATH, filename='config.ini', use_config_file=True, convert_bools_and_none=True
+        path=SETTINGS_PATH, filename=f'{SETTINGS_PATH}\\config.ini', use_config_file=True, convert_bools_and_none=True
     )
 
     theme = settings['GUI']['theme']
@@ -142,10 +147,10 @@ if __name__ == "__main__":
         input_elements_background_color = (french_gray),
         input_text_color= dark_blue,
         text_element_background_color = (dark_blue),
-        titlebar_background_color = lighter_blue,
-        titlebar_text_color = french_gray,
-        titlebar_font = (font_family, 11),
-        use_custom_titlebar = True,
+        #titlebar_background_color = lighter_blue,
+        #titlebar_text_color = french_gray,
+        #titlebar_font = (font_family, 11),
+        #use_custom_titlebar = True,
         use_ttk_buttons=True,
     )
 

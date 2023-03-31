@@ -1,5 +1,5 @@
-from core.config import settings
-from core.smartsheet_classes.smartsheet_api import SmartSheetApi
+from ..config import settings
+from ..smartsheet_classes.smartsheet_api import SmartSheetApi
 
 
 def create_new_smartsheet(sheet_name):

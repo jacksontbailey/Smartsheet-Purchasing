@@ -1,4 +1,4 @@
-from core.smartsheet_functions.create_new_sheet import create_new_smartsheet
+from ..smartsheet_functions.create_new_sheet import create_new_smartsheet
 import PySimpleGUI as sg
 
 def create_new_smartsheet_window():
@@ -41,7 +41,7 @@ def create_new_smartsheet_window():
 
                 create_new_smartsheet(new_sheet_name)
                 window.close()
-                sg.popup_auto_close(title="Successfully created a new Smartsheet!", auto_close_duration=2)
+                sg.popup_auto_close("Successfully created a new Smartsheet!", title="Success", auto_close_duration=2)
                 return
     
     except Exception as e:

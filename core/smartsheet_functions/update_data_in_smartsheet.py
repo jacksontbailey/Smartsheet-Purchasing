@@ -2,7 +2,6 @@ import pandas as pd
 
 def update_smartsheet(excel_data, sheet_manager):
     column_dict = sheet_manager.get_columns()
-
     # Create a list of dictionaries, where each dictionary represents a row in the smartsheet
     mapped_columns = [
         {
@@ -32,3 +31,4 @@ def update_smartsheet(excel_data, sheet_manager):
     )
     
     print(compared_data)
+    return

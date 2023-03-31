@@ -43,7 +43,7 @@ def import_sheet_window(btn, import_function, option):
                 import_function(option, input_file_path, selected_smartsheet_name)
                 window.close()
 
-                if btn =="Update":
+                if btn == "Update":
                     sg.popup_auto_close("Successfully updated your Smartsheet with the provided excel data!", title="Success", auto_close_duration=2)
                 else:
                     sg.popup_auto_close("Successfully imported excel data into your Smartsheet!", title="Success" ,auto_close_duration=2)
