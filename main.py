@@ -104,7 +104,7 @@ def main():
 
             elif event == '-IMPORT-':
                 window.hide()
-                import_sheet_window("Import", import_excel_data, event)
+                import_sheet_window("Import", import_excel_data, event)                    
                 window.un_hide()
 
             elif event == '-UPDATE-':
@@ -115,7 +115,7 @@ def main():
         # close the main GUI window
         window.close()
     except Exception as e:
-        print("Error")
+        print(f"Error: {e}")
         print(traceback.format_exc())
 
 # run the main GUI window
@@ -147,10 +147,6 @@ if __name__ == "__main__":
         input_elements_background_color = (french_gray),
         input_text_color= dark_blue,
         text_element_background_color = (dark_blue),
-        #titlebar_background_color = lighter_blue,
-        #titlebar_text_color = french_gray,
-        #titlebar_font = (font_family, 11),
-        #use_custom_titlebar = True,
         use_ttk_buttons=True,
     )
 

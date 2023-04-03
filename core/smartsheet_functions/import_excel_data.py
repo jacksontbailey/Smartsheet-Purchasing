@@ -27,14 +27,22 @@ def import_excel_data(option, url, smartsheet_name):
         table_name = settings.TABLE_NAME
     )
 
-
     sheet_manager = SmartSheetApi(
         api_key = settings.API_KEY, 
         sheet_name = smartsheet_name,
         workspace_id = workspace
     )
 
-    sheet_manager.get_sheet_id_by_name()
+    
+    excel_data_validation = excel_data.read_data()
+
+    if excel_data_validation == "Incorrect tab name":
+        return excel_data_validation
+
+    sheet_id = sheet_manager.get_sheet_id_by_name()
+
+    if not sheet_id:
+        return "Invalid ID"
 
     if option == '-IMPORT-':
         insert_data_to_smartsheet(

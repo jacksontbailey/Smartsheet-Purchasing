@@ -14,7 +14,6 @@ def insert_data_to_smartsheet(excel_data, sheet_manager):
     Raises:
     Exception: If there's an error inserting the data into the smartsheet, an error message will be displayed.
     """
-
     # Get the columns of the smartsheet
     column_dict = sheet_manager.get_columns()
 

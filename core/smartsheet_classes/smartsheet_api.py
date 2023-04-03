@@ -333,7 +333,7 @@ class SmartSheetApi:
 
         differences = self.compare_data(excel_data)
         if not differences:
-            return 'No differences found, nothing to update.'
+            return '!differences'
 
         rows_to_update = []
         for row_id, row_changes in differences.items():

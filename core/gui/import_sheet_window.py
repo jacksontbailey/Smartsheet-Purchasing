@@ -40,7 +40,28 @@ def import_sheet_window(btn, import_function, option):
                     window.reappear()
                     break
 
-                import_function(option, input_file_path, selected_smartsheet_name)
+                import_function_results = import_function(option, input_file_path, selected_smartsheet_name)
+                
+                if import_function_results == "Invalid ID":
+                    window.disappear()
+                    sg.popup_ok(f"Smartsheet named '{selected_smartsheet_name}' could not be found. Please make sure you type in the exact name of the Smartsheet.", title="Invalid Smartsheet Name")
+                    window.reappear()
+                    break
+                
+                if import_function_results == "Incorrect tab name":
+                    window.disappear()
+                    sg.popup_ok(f"Error: \n\nPlease ensure that the primary tab in your attached excel file is named 'Purchasing_Items'. Other tabs will not be read. \n\nExcel file you uploaded: \n\n'{input_file_path}'", title="Invalid Excel Tab Name")
+                    window.reappear()
+                    break
+
+                if import_function_results == "!differences":
+                    window.disappear()
+                    sg.popup_ok(f"There were no differences found when comparing the data in the excel file and the smartsheet. \n\nExcel file you uploaded: \n\n'{input_file_path}'", title="Nothing to Update")
+                    window.reappear()
+                    break
+
+
+
                 window.close()
 
                 if btn == "Update":
@@ -49,6 +70,6 @@ def import_sheet_window(btn, import_function, option):
                     sg.popup_auto_close("Successfully imported excel data into your Smartsheet!", title="Success" ,auto_close_duration=2)
             except Exception as e:
                 sg.Print("Exception in my import sheet event loop for the program:", sg.__file__, e, keep_on_top=True, wait=True)
-                sg.popup_error_with_traceback('Problem in my event loop!', e)
+                sg.popup_error_with_traceback('Problem in my event loop!')
     
     window.close()
