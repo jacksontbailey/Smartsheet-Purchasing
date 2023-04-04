@@ -39,24 +39,21 @@ def import_sheet_window(btn, import_function, option):
                     sg.popup_error("Form is missing data.")
                     window.reappear()
                     break
-
-                import_function_results = import_function(option, input_file_path, selected_smartsheet_name)
                 
-                if import_function_results == "Invalid ID":
-                    window.disappear()
-                    sg.popup_ok(f"Smartsheet named '{selected_smartsheet_name}' could not be found. Please make sure you type in the exact name of the Smartsheet.", title="Invalid Smartsheet Name")
-                    window.reappear()
-                    break
+                (import_function_results, duplicates) = import_function(option, input_file_path, selected_smartsheet_name)
                 
-                if import_function_results == "Incorrect tab name":
-                    window.disappear()
-                    sg.popup_ok(f"Error: \n\nPlease ensure that the primary tab in your attached excel file is named 'Purchasing_Items'. Other tabs will not be read. \n\nExcel file you uploaded: \n\n'{input_file_path}'", title="Invalid Excel Tab Name")
-                    window.reappear()
-                    break
+                print(f"type: {type(import_function_results)} ,import_function_results: {import_function_results}")
 
-                if import_function_results == "!differences":
+                error_messages = {
+                    "Invalid ID": f"Smartsheet named '{selected_smartsheet_name}' could not be found. Please make sure you type in the exact name of the Smartsheet.",
+                    "Incorrect Tab Name": f"Error: \n\nPlease ensure that the primary tab in your attached excel file is named 'Purchasing_Items'. Other tabs will not be read. \n\nExcel file you uploaded: \n\n'{input_file_path}'",
+                    "No Differences": f"There were no differences found when comparing the data in the excel file and the smartsheet. \n\nExcel file you uploaded: \n\n'{input_file_path}'",
+                    "Duplicates Found": f"Duplicates Found: \n\n {', '.join(duplicates)}"
+                }
+
+                if import_function_results in error_messages:
                     window.disappear()
-                    sg.popup_ok(f"There were no differences found when comparing the data in the excel file and the smartsheet. \n\nExcel file you uploaded: \n\n'{input_file_path}'", title="Nothing to Update")
+                    sg.popup_ok(error_messages.get(import_function_results), title=import_function_results)
                     window.reappear()
                     break
 

@@ -36,7 +36,7 @@ def import_excel_data(option, url, smartsheet_name):
     
     excel_data_validation = excel_data.read_data()
 
-    if excel_data_validation == "Incorrect tab name":
+    if excel_data_validation == "Incorrect Tab Name":
         return excel_data_validation
 
     sheet_id = sheet_manager.get_sheet_id_by_name()
@@ -44,16 +44,18 @@ def import_excel_data(option, url, smartsheet_name):
     if not sheet_id:
         return "Invalid ID"
 
+    response = None
+    print(f"current response before call is: {response}")
     if option == '-IMPORT-':
-        insert_data_to_smartsheet(
+        response = insert_data_to_smartsheet(
                 excel_data = excel_data.read_data(),
                 sheet_manager = sheet_manager
             )
-    
+        return response[0], response[1]
+
     else:
-        update_smartsheet(
+        response = update_smartsheet(
             excel_data = excel_data.read_data(),
             sheet_manager = sheet_manager
         )
-    
-    return
+        return response

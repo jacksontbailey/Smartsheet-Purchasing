@@ -30,5 +30,4 @@ def update_smartsheet(excel_data, sheet_manager):
         excel_data = new_dict, 
     )
     
-    print(compared_data)
-    return
+    return compared_data

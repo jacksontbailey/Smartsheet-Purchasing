@@ -182,7 +182,7 @@ class SmartSheetApi:
         return row
 
 
-    def add_rows(self, mapped_columns, column_dict):
+    def add_rows(self, mapped_columns, column_dict, compare_dict_keys):
         """Adds rows to the sheet.
 
         Args:
@@ -194,6 +194,11 @@ class SmartSheetApi:
         """
         # - Create a list of row objects
         rows = []
+
+        duplicates = self.check_duplicates(compare_dict_keys)
+        if duplicates:
+            return ["Duplicates Found", duplicates]
+        
         for mapped_column in mapped_columns:
             new_row = smartsheet.models.Row()
             new_row.to_bottom = True
@@ -206,9 +211,9 @@ class SmartSheetApi:
             rows.append(new_row)
 
         # - Add the rows to the sheet
-        added_rows = self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
+        self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
 
-        return added_rows
+        return "Success"
 
 
     def update_rows(self, rows_data, column_dict):
@@ -261,7 +266,6 @@ class SmartSheetApi:
         # - Fetch the sheet data
         columns_ids = self.sheet_columns.values()
         rows = self.smartsheet_client.Sheets.get_sheet(self.sheet_id).rows
-        
         # - Build the data frame
         data = {}
         for row in rows:
@@ -280,7 +284,32 @@ class SmartSheetApi:
                     data[item_id] = row_data
                 else:
                     row_data.clear()
+        print(f"smartsheet data is: {data}")
         return data
+
+    def check_duplicates(self, compare_dict_keys):
+        if self.smartsheet_data is None:
+            self.smartsheet_data = self.get_data()
+
+        num_rows = len(self.smartsheet_client.Sheets.get_sheet(self.sheet_id).rows)
+        print(f"num rows is {num_rows}")
+        # - If the sheet is empty, return None
+        if num_rows == 0:
+            return None
+
+
+        duplicates = []
+
+        for key in compare_dict_keys.keys() & self.smartsheet_data.keys():
+            print(f'key is {key}')
+            duplicates.append(key)
+
+
+        print(f"duplicates are: {duplicates}, type{type(duplicates)}")
+        if not duplicates:
+            return None
+        else:
+            return duplicates
 
 
     def compare_data(self, excel_data):
@@ -333,7 +362,7 @@ class SmartSheetApi:
 
         differences = self.compare_data(excel_data)
         if not differences:
-            return '!differences'
+            return 'No Differences'
 
         rows_to_update = []
         for row_id, row_changes in differences.items():
@@ -350,12 +379,10 @@ class SmartSheetApi:
             new_row.cells = cells_to_update
             rows_to_update.append(new_row)
 
-
         self.smartsheet_client.Sheets.update_rows(
             self.sheet_id, 
             rows_to_update        
         )
-
 
         return 'Update successful.'
 
