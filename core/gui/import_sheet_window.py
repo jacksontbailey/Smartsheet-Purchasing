@@ -2,6 +2,19 @@ import PySimpleGUI as sg
 
 
 def import_sheet_window(btn, import_function, option):
+    """
+    Display an import sheet window and process the user input for importing or updating data in Smartsheets.
+    Args:
+        btn (str): The button name indicating whether the user wants to import or update data in Smartsheets.
+        import_function (function): The function that performs the import or update operation.
+        option (str): The option indicating whether the import is a regular or update operation.
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If there is an error in the event loop for the import sheet window.
+    """
     # create the layout for the import sheet window
     frame_layout = [
         [sg.T("What is the name of the Smartsheet you want to use?", expand_x=True, pad=((30, (10, 5))))], 
@@ -40,31 +53,33 @@ def import_sheet_window(btn, import_function, option):
                     window.reappear()
                     break
                 
-                (import_function_results, duplicates) = import_function(option, input_file_path, selected_smartsheet_name)
+                import_function_results = import_function(option, input_file_path, selected_smartsheet_name)
+                error_list = None
+                import_key = import_function_results[0]
                 
-                print(f"type: {type(import_function_results)} ,import_function_results: {import_function_results}")
+                if len(import_function_results) == 2:
+                    error_list = ', '.join(import_function_results[1])
+                
 
                 error_messages = {
                     "Invalid ID": f"Smartsheet named '{selected_smartsheet_name}' could not be found. Please make sure you type in the exact name of the Smartsheet.",
                     "Incorrect Tab Name": f"Error: \n\nPlease ensure that the primary tab in your attached excel file is named 'Purchasing_Items'. Other tabs will not be read. \n\nExcel file you uploaded: \n\n'{input_file_path}'",
                     "No Differences": f"There were no differences found when comparing the data in the excel file and the smartsheet. \n\nExcel file you uploaded: \n\n'{input_file_path}'",
-                    "Duplicates Found": f"Duplicates Found: \n\n {', '.join(duplicates)}"
+                    "Duplicates Found": f"Error: Could not import data from the excel file to smartsheets due to matching Item IDs in both sheets.\n\nDuplicate Item IDs: \n\n{error_list}"
                 }
 
-                if import_function_results in error_messages:
+                if import_key in error_messages:
                     window.disappear()
-                    sg.popup_ok(error_messages.get(import_function_results), title=import_function_results)
+                    sg.popup_ok(error_messages.get(import_key), title=import_key)
                     window.reappear()
                     break
 
-
-
                 window.close()
-
+                
                 if btn == "Update":
                     sg.popup_auto_close("Successfully updated your Smartsheet with the provided excel data!", title="Success", auto_close_duration=2)
                 else:
-                    sg.popup_auto_close("Successfully imported excel data into your Smartsheet!", title="Success" ,auto_close_duration=2)
+                    sg.popup_auto_close("Successfully imported excel data into your Smartsheet!", title="Success", auto_close_duration=2)
             except Exception as e:
                 sg.Print("Exception in my import sheet event loop for the program:", sg.__file__, e, keep_on_top=True, wait=True)
                 sg.popup_error_with_traceback('Problem in my event loop!')

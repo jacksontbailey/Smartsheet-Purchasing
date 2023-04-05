@@ -8,15 +8,21 @@ from ..smartsheet_functions.update_data_in_smartsheet import update_smartsheet
 def import_excel_data(option, url, smartsheet_name):
     """
     Imports data from an Excel sheet into a Smartsheet.
-    
-    This function imports data from an Excel sheet into a Smartsheet. It does so by first selecting the Excel sheet from which to grab data from and the Smartsheet to which to upload that data. It then reads in the data from the selected Excel sheet and inserts it into the selected Smartsheet.
-    
+
+    This function imports data from the specified Excel sheet into the specified Smartsheet. It first initializes an instance
+    of the `ExcelSheetManager` class with the provided URL, tab name, and table name. It also initializes an instance of the 
+    `SmartSheetApi` class with the provided API key, sheet name, and workspace ID. It then reads the data from the selected Excel
+    sheet and inserts it into the selected Smartsheet using the `update_smartsheet` function. If the selected Excel sheet has an
+    incorrect tab name or if the Smartsheet has an invalid ID, the function returns an error message.
+
     Parameters:
-        input_question (object): an instance of the `InputQuestions` class that contains information about the selected options for the import process.
-    
+        option (object): an instance of the `InputQuestions` class that contains information about the selected options for 
+        the import process.
+        url (str): a string containing the URL of the Excel sheet to import data from.
+        smartsheet_name (str): a string containing the name of the Smartsheet to import data into.
+
     Returns:
         None: This function does not return any value.
-    
     """
 
     workspace = int(settings.WORKSPACE_ID)
@@ -37,25 +43,17 @@ def import_excel_data(option, url, smartsheet_name):
     excel_data_validation = excel_data.read_data()
 
     if excel_data_validation == "Incorrect Tab Name":
-        return excel_data_validation
+        return [excel_data_validation]
 
     sheet_id = sheet_manager.get_sheet_id_by_name()
 
     if not sheet_id:
-        return "Invalid ID"
+        return ["Invalid ID"]
 
-    response = None
-    print(f"current response before call is: {response}")
-    if option == '-IMPORT-':
-        response = insert_data_to_smartsheet(
-                excel_data = excel_data.read_data(),
-                sheet_manager = sheet_manager
-            )
-        return response[0], response[1]
-
-    else:
-        response = update_smartsheet(
-            excel_data = excel_data.read_data(),
-            sheet_manager = sheet_manager
-        )
-        return response
+    response = update_smartsheet(
+        excel_data = excel_data.read_data(),
+        sheet_manager = sheet_manager,
+        option = option
+    )
+    
+    return response

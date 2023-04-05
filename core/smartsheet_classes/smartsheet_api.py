@@ -258,10 +258,19 @@ class SmartSheetApi:
 
 
     def get_data(self):
-        """Retrieves all the data from the sheet.
+        """
+        Retrieves the data from the sheet based on the specified column IDs.
+
+        Args:
+            column_ids (List[str]): A list of column IDs to retrieve data from.
 
         Returns:
-            pandas DataFrame: A DataFrame containing all the data from the sheet.
+            dict: A dictionary representing the sheet data, where the keys are the row IDs and the values are dictionaries representing the column values for each row.
+
+        Raises:
+            ValueError: If the provided column IDs are not a list.
+            ValueError: If any of the provided column IDs are not strings.
+            Exception: If there is an error retrieving data from Smartsheet.
         """
         # - Fetch the sheet data
         columns_ids = self.sheet_columns.values()
@@ -284,15 +293,26 @@ class SmartSheetApi:
                     data[item_id] = row_data
                 else:
                     row_data.clear()
-        print(f"smartsheet data is: {data}")
         return data
 
     def check_duplicates(self, compare_dict_keys):
+        """
+        Checks if there are any duplicate values in the specified column.
+
+        Args:
+            column_id (str): The ID of the column to check for duplicates.
+
+        Returns:
+            bool: True if there are duplicates in the column, False otherwise.
+
+        Raises:
+            ValueError: If the provided column ID is not a string.
+            KeyError: If the provided column ID is not found in the sheet data.
+        """
         if self.smartsheet_data is None:
             self.smartsheet_data = self.get_data()
 
         num_rows = len(self.smartsheet_client.Sheets.get_sheet(self.sheet_id).rows)
-        print(f"num rows is {num_rows}")
         # - If the sheet is empty, return None
         if num_rows == 0:
             return None
@@ -301,11 +321,8 @@ class SmartSheetApi:
         duplicates = []
 
         for key in compare_dict_keys.keys() & self.smartsheet_data.keys():
-            print(f'key is {key}')
             duplicates.append(key)
 
-
-        print(f"duplicates are: {duplicates}, type{type(duplicates)}")
         if not duplicates:
             return None
         else:
@@ -314,21 +331,22 @@ class SmartSheetApi:
 
     def compare_data(self, excel_data):
         """
-            Compares the provided excel data with the Smartsheet data and returns the differences between them.
+        Compares the Excel data with the Smartsheet data based on the specified key column ID.
 
-            Args:
-                excel_data (dict): The data to compare to the Smartsheet data. A dictionary with the item ID as key and the
-                    sub-dictionary containing the data to compare as value.
-                self.key_column_id (str): The name of the key representing the item ID.
-                smartsheet_data (dict, optional): The Smartsheet data to compare with. If not provided, the sheet data will be
-                    fetched from Smartsheet.
+        Args:
+            excel_data (dict): A dictionary representing the Excel data to compare.
+            smartsheet_data (dict): A dictionary representing the Smartsheet data to compare.
+            key_column_id (str): The ID of the key column to compare.
 
-            Returns:
-                dict: A dictionary containing the differences between the two datasets. The dictionary contains the item ID as
-                    key and the sub-dictionary of differences as value. The sub-dictionary of differences contains only the keys
-                    that exist in both datasets and have different values.
-        """        
+        Returns:
+            Tuple[List[dict], List[dict], List[dict]]: A tuple of three lists representing the rows to add, update, and delete from the Smartsheet data.
 
+        Raises:
+            ValueError: If the provided Excel data is not a dictionary.
+            ValueError: If the provided Smartsheet data is not a dictionary.
+            ValueError: If the provided key column ID is not a string.
+            KeyError: If the provided key column ID is not found in either the Excel or Smartsheet data.
+        """
         if self.smartsheet_data is None:
             self.smartsheet_data = self.get_data()
 
@@ -350,19 +368,29 @@ class SmartSheetApi:
 
 
     def update_data(self, excel_data):
-        """Updates the sheet data with the data to compare.
+        """
+        Updates the sheet data with the data to compare.
 
         Args:
-            excel_data (dict): The data to compare to the sheet data.
-            self.key_column_id (str): The name of the column containing the item IDs.
-            smartsheet_data (dict, optional): The sheet data to compare. If not provided, the sheet data will be fetched from Smartsheet.
+            excel_data (dict): A dictionary representing the Excel data to be compared with the Smartsheet data.
+            key_column_id (str): The name of the column in both the Excel and Smartsheet data that contains the unique identifier for each item.
+            smartsheet_data (dict, optional): A dictionary representing the Smartsheet data to be compared with the Excel data. If not provided, the Smartsheet data will be fetched using the Smartsheet API.
+
+        Raises:
+            ValueError: If the provided Excel data is not a dictionary.
+            ValueError: If the provided key column ID is not a string.
+            ValueError: If the provided Smartsheet data is not a dictionary.
+            KeyError: If the provided key column ID is not found in either the Excel or Smartsheet data.
+            Exception: If there is an error updating the Smartsheet data with the Excel data.
         """
         if self.smartsheet_data is None:
             self.smartsheet_data = self.get_data()
 
         differences = self.compare_data(excel_data)
+        print(f"dif: {differences}")
         if not differences:
-            return 'No Differences'
+            print("NONE")
+            return ['No Differences']
 
         rows_to_update = []
         for row_id, row_changes in differences.items():
@@ -384,6 +412,6 @@ class SmartSheetApi:
             rows_to_update        
         )
 
-        return 'Update successful.'
+        return ['Update successful.']
 
 
