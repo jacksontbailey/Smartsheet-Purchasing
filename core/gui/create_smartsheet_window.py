@@ -2,6 +2,15 @@ from ..smartsheet_functions.create_new_sheet import create_new_smartsheet
 import PySimpleGUI as sg
 
 def create_new_smartsheet_window():
+    """
+    Display a window for creating a new Smartsheet and process the user input for creating a new sheet.
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If there is an error in the event loop for the new Smartsheet window.
+    """
     # create the layout for the new Smartsheet window
     frame_layout = [
         [sg.T('What do you want to call your new Smartsheet?', expand_x=True, pad=((30, (20, 5))))],

@@ -1,4 +1,3 @@
-import pandas as pd
 import math
 
 def update_smartsheet(excel_data, sheet_manager, option):

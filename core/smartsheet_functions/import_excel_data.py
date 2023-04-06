@@ -1,7 +1,6 @@
 from ..config import settings
 from ..excel_classes.sheet_manager import ExcelSheetManager
 from ..smartsheet_classes.smartsheet_api import SmartSheetApi
-from ..smartsheet_functions.insert_data_to_smartsheet import insert_data_to_smartsheet
 from ..smartsheet_functions.update_data_in_smartsheet import update_smartsheet
 
 
