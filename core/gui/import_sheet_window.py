@@ -54,6 +54,7 @@ def import_sheet_window(btn, import_function, option):
                     break
                 
                 import_function_results = import_function(option, input_file_path, selected_smartsheet_name)
+                print(f"import results: {import_function_results}, type({import_function_results})")
                 error_list = None
                 import_key = import_function_results[0]
                 
@@ -65,7 +66,8 @@ def import_sheet_window(btn, import_function, option):
                     "Invalid ID": f"Smartsheet named '{selected_smartsheet_name}' could not be found. Please make sure you type in the exact name of the Smartsheet.",
                     "Incorrect Tab Name": f"Error: \n\nPlease ensure that the primary tab in your attached excel file is named 'Purchasing_Items'. Other tabs will not be read. \n\nExcel file you uploaded: \n\n'{input_file_path}'",
                     "No Differences": f"There were no differences found when comparing the data in the excel file and the smartsheet. \n\nExcel file you uploaded: \n\n'{input_file_path}'",
-                    "Duplicates Found": f"Error: Could not import data from the excel file to smartsheets due to matching Item IDs in both sheets.\n\nDuplicate Item IDs: \n\n{error_list}"
+                    "Duplicates Found": f"Error: Could not import data from the excel file to smartsheets due to matching Item IDs in both sheets.\n\nDuplicate Item IDs: \n\n{error_list}",
+                    "Incorrect Format": f"Error: The excel file you provided could not be imported due to having the incorrect format."
                 }
 
                 if import_key in error_messages:

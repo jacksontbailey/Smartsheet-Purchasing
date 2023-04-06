@@ -18,9 +18,7 @@ def create_new_smartsheet(sheet_name):
             api_key = settings.API_KEY, 
             workspace_id = int(settings.WORKSPACE_ID)
         )
-        
-        print(f"Workspace is: {new_sheet.workspace_id}")
-        
+                
         new_sheet.create_sheet_in_workspace(
             template_sheet_id = settings.TEMPLATE_SHEET,
             new_sheet_name = sheet_name, 
