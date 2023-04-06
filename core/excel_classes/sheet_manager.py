@@ -69,7 +69,7 @@ class ExcelSheetManager:
             return True, None
         else:
             # Returns False and an error message
-            return False, "Incorrect tab name"
+            return False, "Incorrect Tab Name"
         
 
 
@@ -86,10 +86,9 @@ class ExcelSheetManager:
         # Uses a for loop to iterate over the methods and check their status
         for check_method in [self.check_file, self.check_tab]:
             status, message = check_method()
-
             # If the status is False, returns the message
             if not status:
-                return message
+                return [message]
 
         try:
             # Reads data from the specified tab in the Excel file
@@ -98,7 +97,7 @@ class ExcelSheetManager:
 
             # Checks if the Excel tab is empty
             if df.empty:
-                return 
+                return ["Empty Tab"]
 
             self.data = df.to_dict('records')
             return self.data

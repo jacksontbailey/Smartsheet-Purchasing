@@ -15,34 +15,34 @@ def update_smartsheet(excel_data, sheet_manager, option):
     Raises:
     Exception: If there's an error updating the data in the smartsheet, an error message will be displayed.
     """
+    mapped_columns=None
+    column_dict = sheet_manager.get_columns()
+    if option == "-IMPORT-":
+        mapped_columns = [
+            {
+                "ITEM#": row["Item ID"],
+                "ITEM DESCRIPTION": row["Item Description"],
+                "QTY": row["Quantity"],
+                "UOM": row["UOM"],
+                "AREA": row["Area"],
+                "NOTES": row["Specific Area"] if not math.isnan(row["Specific Area"]) else "",
+                "AWARDED TO": row["Awarded To"],
+            }
+            for row in excel_data
+        ]
+    else:
+        mapped_columns = [
+            {
+                "ITEM#": row["Item ID"],
+                "ITEM DESCRIPTION": row["Item Description"],
+                "QTY": row["Quantity"],
+                "AREA": row["Area"],
+                "NOTES": row["Specific Area"] if not math.isnan(row["Specific Area"]) else None,
+            }
+            for row in excel_data
+        ]
+    
     try:
-        mapped_columns=None
-        column_dict = sheet_manager.get_columns()
-        if option == "-IMPORT-":
-            mapped_columns = [
-                {
-                    "ITEM#": row["Item ID"],
-                    "ITEM DESCRIPTION": row["Item Description"],
-                    "QTY": row["Quantity"],
-                    "UOM": row["UOM"],
-                    "AREA": row["Area"],
-                    "NOTES": row["Specific Area"] if not math.isna(row["Specific Area"]) else "",
-                    "AWARDED TO": row["Awarded To"],
-                }
-                for row in excel_data
-            ]
-        else:
-            mapped_columns = [
-                {
-                    "ITEM#": row["Item ID"],
-                    "ITEM DESCRIPTION": row["Item Description"],
-                    "QTY": row["Quantity"],
-                    "AREA": row["Area"],
-                    "NOTES": row["Specific Area"] if not math.isna(row["Specific Area"]) else None,
-                }
-                for row in excel_data
-            ]
-
             common_keys = set(mapped_columns[0].keys()) & set(column_dict.keys())
             dictionary_of_keys = {key: column_dict[key] for key in common_keys}
             sheet_manager.key_column_id = dictionary_of_keys['ITEM#']

@@ -40,9 +40,8 @@ def import_excel_data(option, url, smartsheet_name):
 
     
     excel_data_validation = excel_data.read_data()
-
-    if excel_data_validation == "Incorrect Tab Name":
-        return [excel_data_validation]
+    if excel_data_validation[0] in ("Incorrect Tab Name", "Empty Tab"):
+        return excel_data_validation
 
     sheet_id = sheet_manager.get_sheet_id_by_name()
 
