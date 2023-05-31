@@ -182,12 +182,13 @@ class SmartSheetApi:
         return row
 
 
-    def add_rows(self, mapped_columns, column_dict, compare_dict_keys):
+    def add_rows(self, mapped_columns, column_dict, compare_dict_keys, allowed):
         """Adds rows to the sheet.
 
         Args:
             rows_data (list): A list of dictionaries containing the data for each row.
             column_dict (dict): A dictionary of column names and IDs.
+            allowed (bool): True if duplicates are allowed, False otherwise.
 
         Returns:
             list: A list of the added rows.
@@ -196,7 +197,8 @@ class SmartSheetApi:
         rows = []
 
         duplicates = self.check_duplicates(compare_dict_keys)
-        if duplicates:
+
+        if duplicates and not allowed:
             return ["Duplicates Found", duplicates]
         
         for mapped_column in mapped_columns:
@@ -211,7 +213,14 @@ class SmartSheetApi:
             rows.append(new_row)
 
         # - Add the rows to the sheet
-        self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
+        added_rows = self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
+        if duplicates:
+            if allowed:
+                duplicate_ids = [duplicate['id'] for duplicate in duplicates]
+                added_row_ids = [added_row.id for added_row in added_rows]
+                duplicate_ids_to_highlight = list(set(duplicate_ids) & set(added_row_ids))
+                print(f"added rows: {duplicate_ids_to_highlight}")
+                self.highlight_duplicates(duplicate_ids=duplicate_ids_to_highlight)
 
         return "Success"
 
@@ -255,6 +264,27 @@ class SmartSheetApi:
         """
         # - Delete the row
         self.smartsheet_client.Sheets.delete_rows(self.sheet_id, row_id)
+
+
+    def highlight_duplicates(self, duplicate_ids):
+        """Highlights all rows with duplicate IDs.
+
+        Args:
+        duplicate_ids (list): A list of IDs for rows with duplicates.
+        """
+        rows = []
+        for duplicate_id in duplicate_ids:
+            row = smartsheet.models.Row()
+            row.id = duplicate_id
+            row.format_ = smartsheet.models.Format()
+            row.format_.background_color = smartsheet.models.Color()
+            row.format_.background_color.red = 255
+            row.format_.background_color.blue = 0
+            row.format_.background_color.green = 0
+            rows.append(row)
+
+        self.smartsheet_client.Sheets.update_rows(self.sheet_id, rows)
+
 
 
     def get_data(self):

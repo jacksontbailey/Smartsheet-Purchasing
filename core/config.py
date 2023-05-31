@@ -2,10 +2,13 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
 
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path='C:/Users/jbailey/Documents/Python Projects/smartsheet_purchasing/.env')
+env_path = Path(".") / ".env"
+load_dotenv(
+    dotenv_path="C:/Users/jbailey/Documents/Python_Projects/smartsheet_purchasing/.env"
+)
 # or load from the first .env file found
 load_dotenv(dotenv_path=find_dotenv())
+
 
 class Settings:
     """Class representing the settings used for interacting with Smartsheet API and Excel Sheets.
@@ -21,6 +24,7 @@ class Settings:
         EXCEL_TAB (str): The name of the tab in the Excel sheet to use.
         TABLE_NAME (str): The name of the table in the Excel sheet to use.
     """
+
     # - SmartSheet Urls
     SMARTSHEET_API_URL = "https://api.smartsheet.com/2.0/sheets/"
 
