@@ -213,9 +213,11 @@ class SmartSheetApi:
             rows.append(new_row)
 
         # - Add the rows to the sheet
+        print("starting duplicates")
         added_rows = self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
         if duplicates:
             if allowed:
+                print("is allowed")
                 duplicate_ids = [duplicate['id'] for duplicate in duplicates]
                 added_row_ids = [added_row.id for added_row in added_rows]
                 duplicate_ids_to_highlight = list(set(duplicate_ids) & set(added_row_ids))
@@ -272,18 +274,15 @@ class SmartSheetApi:
         Args:
         duplicate_ids (list): A list of IDs for rows with duplicates.
         """
-        rows = []
+        print(f"duplicates are {duplicate_ids}")
+        format_string = ",,,,,,,,,25,,,,,,,"
         for duplicate_id in duplicate_ids:
-            row = smartsheet.models.Row()
-            row.id = duplicate_id
-            row.format_ = smartsheet.models.Format()
-            row.format_.background_color = smartsheet.models.Color()
-            row.format_.background_color.red = 255
-            row.format_.background_color.blue = 0
-            row.format_.background_color.green = 0
-            rows.append(row)
+            row = self.smartsheet_client.Sheets.get_row(self.sheet_id, duplicate_id)
+            for cell in row.cells:
+                cell.format_ = smartsheet.models.Format()
+                cell.format_.background_color = format_string
 
-        self.smartsheet_client.Sheets.update_rows(self.sheet_id, rows)
+        self.smartsheet_client.Sheets.update_rows(self.sheet_id, [row])
 
 
 
