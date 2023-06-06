@@ -197,6 +197,7 @@ class SmartSheetApi:
         rows = []
 
         duplicates = self.check_duplicates(compare_dict_keys)
+        print(f"duplicates are: {duplicates}")
 
         if duplicates and not allowed:
             return ["Duplicates Found", duplicates]
@@ -208,22 +209,13 @@ class SmartSheetApi:
                 column_id = column_dict[column_name]
                 cell = smartsheet.models.Cell()
                 cell.column_id = column_id
-                cell.value = value
+                cell.value = f"{value} - duplicate" if value in duplicates and allowed else value
+                print(f'cell value is: {cell.value}')
                 new_row.cells.append(cell)
             rows.append(new_row)
 
-        # - Add the rows to the sheet
-        print("starting duplicates")
-        added_rows = self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
-        if duplicates:
-            if allowed:
-                print("is allowed")
-                duplicate_ids = [duplicate['id'] for duplicate in duplicates]
-                added_row_ids = [added_row.id for added_row in added_rows]
-                duplicate_ids_to_highlight = list(set(duplicate_ids) & set(added_row_ids))
-                print(f"added rows: {duplicate_ids_to_highlight}")
-                self.highlight_duplicates(duplicate_ids=duplicate_ids_to_highlight)
-
+        self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
+        
         return "Success"
 
 
@@ -329,7 +321,7 @@ class SmartSheetApi:
         Checks if there are any duplicate values in the specified column.
 
         Args:
-            column_id (str): The ID of the column to check for duplicates.
+            compare_dict_keys (str): The ID of the column to check for duplicates.
 
         Returns:
             bool: True if there are duplicates in the column, False otherwise.
