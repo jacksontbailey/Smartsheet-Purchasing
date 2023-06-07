@@ -91,6 +91,7 @@ def import_sheet_window(btn, import_function, option):
                 error_list = None
                 import_key = import_function_results[0]
 
+
                 if len(import_function_results) == 2:
                     error_list = ", ".join(import_function_results[1])
 

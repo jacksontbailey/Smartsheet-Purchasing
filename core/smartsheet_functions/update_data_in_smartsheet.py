@@ -26,9 +26,7 @@ def update_smartsheet(excel_data, sheet_manager, option):
                 "QTY": row["Quantity"],
                 "UOM": row["UOM"],
                 "AREA": row["Area"],
-                "NOTES": row["Specific Area"]
-                if not math.isnan(row["Specific Area"])
-                else "",
+                "NOTES": row["Specific Area"] if isinstance(row["Specific Area"], str) else "",
                 "AWARDED TO": row["Awarded To"],
             }
             for row in excel_data
@@ -41,7 +39,7 @@ def update_smartsheet(excel_data, sheet_manager, option):
                 "QTY": row["Quantity"],
                 "AREA": row["Area"],
                 "NOTES": row["Specific Area"]
-                if not math.isnan(row["Specific Area"])
+                if isinstance(row["Specific Area"], str)
                 else None,
             }
             for row in excel_data

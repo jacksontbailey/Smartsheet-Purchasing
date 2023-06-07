@@ -197,7 +197,6 @@ class SmartSheetApi:
         rows = []
 
         duplicates = self.check_duplicates(compare_dict_keys)
-        print(f"duplicates are: {duplicates}")
 
         if duplicates and not allowed:
             return ["Duplicates Found", duplicates]
@@ -210,7 +209,6 @@ class SmartSheetApi:
                 cell = smartsheet.models.Cell()
                 cell.column_id = column_id
                 cell.value = f"{value} - duplicate" if value in duplicates and allowed else value
-                print(f'cell value is: {cell.value}')
                 new_row.cells.append(cell)
             rows.append(new_row)
 
@@ -266,7 +264,6 @@ class SmartSheetApi:
         Args:
         duplicate_ids (list): A list of IDs for rows with duplicates.
         """
-        print(f"duplicates are {duplicate_ids}")
         format_string = ",,,,,,,,,25,,,,,,,"
         for duplicate_id in duplicate_ids:
             row = self.smartsheet_client.Sheets.get_row(self.sheet_id, duplicate_id)
@@ -408,9 +405,7 @@ class SmartSheetApi:
             self.smartsheet_data = self.get_data()
 
         differences = self.compare_data(excel_data)
-        print(f"dif: {differences}")
         if not differences:
-            print("NONE")
             return ['No Differences']
 
         rows_to_update = []
