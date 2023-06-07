@@ -182,12 +182,13 @@ class SmartSheetApi:
         return row
 
 
-    def add_rows(self, mapped_columns, column_dict, compare_dict_keys):
+    def add_rows(self, mapped_columns, column_dict, compare_dict_keys, allowed):
         """Adds rows to the sheet.
 
         Args:
             rows_data (list): A list of dictionaries containing the data for each row.
             column_dict (dict): A dictionary of column names and IDs.
+            allowed (bool): True if duplicates are allowed, False otherwise.
 
         Returns:
             list: A list of the added rows.
@@ -196,7 +197,8 @@ class SmartSheetApi:
         rows = []
 
         duplicates = self.check_duplicates(compare_dict_keys)
-        if duplicates:
+
+        if duplicates and not allowed:
             return ["Duplicates Found", duplicates]
         
         for mapped_column in mapped_columns:
@@ -206,13 +208,12 @@ class SmartSheetApi:
                 column_id = column_dict[column_name]
                 cell = smartsheet.models.Cell()
                 cell.column_id = column_id
-                cell.value = value
+                cell.value = f"{value} - duplicate" if value in duplicates and allowed else value
                 new_row.cells.append(cell)
             rows.append(new_row)
 
-        # - Add the rows to the sheet
         self.smartsheet_client.Sheets.add_rows(self.sheet_id, rows)
-
+        
         return "Success"
 
 
@@ -255,6 +256,23 @@ class SmartSheetApi:
         """
         # - Delete the row
         self.smartsheet_client.Sheets.delete_rows(self.sheet_id, row_id)
+
+
+    def highlight_duplicates(self, duplicate_ids):
+        """Highlights all rows with duplicate IDs.
+
+        Args:
+        duplicate_ids (list): A list of IDs for rows with duplicates.
+        """
+        format_string = ",,,,,,,,,25,,,,,,,"
+        for duplicate_id in duplicate_ids:
+            row = self.smartsheet_client.Sheets.get_row(self.sheet_id, duplicate_id)
+            for cell in row.cells:
+                cell.format_ = smartsheet.models.Format()
+                cell.format_.background_color = format_string
+
+        self.smartsheet_client.Sheets.update_rows(self.sheet_id, [row])
+
 
 
     def get_data(self):
@@ -300,7 +318,7 @@ class SmartSheetApi:
         Checks if there are any duplicate values in the specified column.
 
         Args:
-            column_id (str): The ID of the column to check for duplicates.
+            compare_dict_keys (str): The ID of the column to check for duplicates.
 
         Returns:
             bool: True if there are duplicates in the column, False otherwise.
@@ -387,9 +405,7 @@ class SmartSheetApi:
             self.smartsheet_data = self.get_data()
 
         differences = self.compare_data(excel_data)
-        print(f"dif: {differences}")
         if not differences:
-            print("NONE")
             return ['No Differences']
 
         rows_to_update = []
