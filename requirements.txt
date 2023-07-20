@@ -36,7 +36,7 @@ pandas==1.5.2
 pefile==2023.2.7
 platformdirs==3.0.0
 psgcompiler==1.5.1
-Pygments==2.14.0
+Pygments==2.15.0
 PyInputPlus==0.2.12
 pyinstaller==5.9.0
 pyinstaller-hooks-contrib==2023.1
