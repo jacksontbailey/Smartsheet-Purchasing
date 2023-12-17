@@ -38,7 +38,7 @@ platformdirs==3.0.0
 psgcompiler==1.5.1
 Pygments==2.14.0
 PyInputPlus==0.2.12
-pyinstaller==5.9.0
+pyinstaller==5.13.1
 pyinstaller-hooks-contrib==2023.1
 pylint==2.16.2
 PySimpleGUI==4.60.4
