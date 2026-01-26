@@ -60,7 +60,7 @@ textual==0.11.1
 tomlkit==0.11.6
 typing_extensions==4.5.0
 uc-micro-py==1.0.1
-urllib3==1.26.13
+urllib3==2.6.3
 watchdog==2.3.0
 wrapt==1.14.1
 yarl==1.8.2
